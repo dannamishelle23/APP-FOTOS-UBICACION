@@ -1,6 +1,6 @@
-## Implementacion de splash screen 
+# Implementacion de splash screen 
 
-# 1. Instalar el Capacitor de Splash Screen
+### 1. Instalar el Capacitor de Splash Screen
 
 Se ejecuta el comando: npm install @capacitor/splash-screen
 
@@ -8,7 +8,7 @@ Se ejecuta el comando: npm install @capacitor/splash-screen
 
 Este comando instala el plugin oficial de Capacitor que maneja la pantalla de carga o inicio (el splash screen) de la aplicación creada con Ionic.
 
-# 2. Instalar Capacitor Assets
+### 2. Instalar Capacitor Assets
 
 Se ejecuta el comando: npm install @capacitor/assets --save-dev
 
@@ -16,7 +16,7 @@ Se ejecuta el comando: npm install @capacitor/assets --save-dev
 
 Esto sirve para generar automáticamente todos los tamaños de íconos y splash screen para Android e iOS a partir de las imágenes principales. 
 
-# 3. Generar los Assets
+### 3. Generar los Assets
 
 Dentro del proyecto se crea una carpeta llamada resources/ y se agregan las imágenes (icon.png) y (splash.png)
 
@@ -30,11 +30,48 @@ npx @capacitor/assets generate
 
 Esto va a generar automáticamente las versiones para Android e iOS con los tamaños correctos.
 
-# 4. Configurar capacitor.config.ts
+### 4. Configurar capacitor.config.ts
 
-<img width="726" height="443" alt="image" src="https://github.com/user-attachments/assets/6db0d542-758e-4082-9555-e89bf34fcc1a" />
+<img width="669" height="375" alt="image" src="https://github.com/user-attachments/assets/7f941b37-084c-4b45-b6b3-5bfbbab67722" />
 
 Se le añaden funcionalidades como las siguientes:
 - launchShowDuration: Duración del splash al iniciar la app, en milisegundos (3 segundos).
 - backgroundColor: Color de fondo del splash mientras se carga la app.
 - showSpinner: Decide si mostrar o no el spinner (círculo de carga) en el splash.
+
+### 5. Configurar app.component.ts
+
+<img width="664" height="472" alt="image" src="https://github.com/user-attachments/assets/8c54a194-0497-4ca8-a5e0-e1132df4c015" />
+
+Las funcionalidades que se agregaron fueron las siguientes:
+- showDuration: mantiene el splash visible 5 segundos.
+- autoHide: Se oculta solo después de ese tiempo o cuando la app termine de cargar.
+
+Esto permite controlar cuánto dura el splash según la carga real de la app. Es útil para mostrar animaciones o cargar datos iniciales antes de que el usuario vea la app.
+
+### Sincronizar cambios 
+Cada vez que se actualicen los assets o config ejecutar: npx cap sync para copiar íconos, splash y configuración a Android e iOS.
+
+### Verificar los assets generados
+
+Los assets generados (icon, splash) se guardan en las siguientes rutas:
+android/app/src/main/res/mipmap-hdpi/icon.png
+android/app/src/main/res/drawable/splash.png
+
+A veces las imágenes no se generan correctamente por lo que es necesario forzar la regeneración eliminando los archivos antiguos del proyecto y volviendo a compilar la aplicación.
+
+En la raíz del proyecto ejecutar en Windows Powershell:
+- Remove-Item -Recurse -Force android\app\src\main\res\mipmap-*
+- Remove-Item -Recurse -Force android\app\src\main\res\drawable-*
+
+Y se vuelve a ejecutar: npx @capacitor/assets generate
+
+### Configurar AndroidManifest.xml
+
+<img width="802" height="500" alt="image" src="https://github.com/user-attachments/assets/a978f987-6bdf-436c-8a99-4174e40209b8" />
+
+Este AndroidManifest.xml define el ícono de la app y el nombre que se muestra. 
+- Aplica un tema general que incluye cómo se ve el splash screen por defecto.
+- Usa un tema especial (NoActionBarLaunch) para mostrar el Splash Screen en pantalla completa.
+- Mantiene la orientación y configuración de pantalla sin reiniciarse al girar el teléfono.
+- Permite que el sistema Android la reconozca como “launcher” para abrir la app desde el icono.
