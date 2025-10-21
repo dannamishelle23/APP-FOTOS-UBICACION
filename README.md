@@ -75,3 +75,13 @@ Este AndroidManifest.xml define el ícono de la app y el nombre que se muestra.
 - Usa un tema especial (NoActionBarLaunch) para mostrar el Splash Screen en pantalla completa.
 - Mantiene la orientación y configuración de pantalla sin reiniciarse al girar el teléfono.
 - Permite que el sistema Android la reconozca como “launcher” para abrir la app desde el icono.
+
+### Funcionamiento de la aplicación
+Al crear la APK con Android Studio el resultado que dio fue el siguiente:
+
+- En los widgets, la aplicación se carga con el ícono respectivo.
+![Imagen de WhatsApp 2025-10-20 a las 20 25 48_07ec16db](https://github.com/user-attachments/assets/ca4187a3-2357-4b4d-9e97-972053de1df4)
+
+- Al abrir la app, se muestra un splash que es el fondo negro con el ícono personalizado.
+![Imagen de WhatsApp 2025-10-20 a las 20 25 47_63e790d3](https://github.com/user-attachments/assets/64a10f7d-526a-48ee-8c22-cec9bcc13110)
+![Imagen de WhatsApp 2025-10-20 a las 20 25 47_779a0c97](https://github.com/user-attachments/assets/a51a5395-f68b-4eb4-8499-635c0bfd227d)
