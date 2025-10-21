@@ -16,7 +16,7 @@ import { Position } from '@capacitor/geolocation';
   ],
 })
 
-export class HomePage implements OnInit, OnDestroy {
+export class Tab1Page implements OnInit, OnDestroy {
   latitude = signal<number | null>(null);
   longitude = signal<number | null>(null);
   watchId: string | null = null;
