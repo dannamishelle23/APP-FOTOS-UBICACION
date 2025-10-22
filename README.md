@@ -42,8 +42,12 @@ En este código, el usuario podrá tomar la foto con un botón que le pedirá pe
 ### 5. Demostración del funcionamiento de la APK
 
 #### Galería de fotos 
-![alt text](<Imagen de WhatsApp 2025-10-21 a las 23.19.59_c972f171.jpg>)
+![image-5](<Imagen de WhatsApp 2025-10-21 a las 23.19.59_c972f171.jpg>)
 
 #### Cuando se abre la ubicación de la imagen, dirige al punto específico donde fue tomada.
 
-![alt text](<Imagen de WhatsApp 2025-10-21 a las 23.20.00_7473e7a1.jpg>)
+![image-6](<Imagen de WhatsApp 2025-10-21 a las 23.20.00_7473e7a1.jpg>)
+
+Adicional a ello, en Android Studio se debe editar el AndroidManifest.xml para pedir al dispositivo los permisos para acceder a la cámara y a la ubicación.
+
+![image-7](image-5.png)
