@@ -42,11 +42,19 @@ export class PhotoService {
     });
   }
 
+  async requestPermissions() {
+  // Solicita permisos de cámara, archivos y geolocalización
+  await Camera.requestPermissions();
+  await Geolocation.requestPermissions();
+  await Filesystem.requestPermissions?.(); 
+  }
+
   //Tomar nueva foto + guardar ubicación
   async addNewToGallery() {
+    await this.requestPermissions();
     // Tomar foto
     const photo: Photo = await Camera.getPhoto({
-      resultType: CameraResultType.Uri,
+      resultType: CameraResultType.Base64,
       source: CameraSource.Camera,
       quality: 85
     });
@@ -65,12 +73,11 @@ export class PhotoService {
     const pos = await Geolocation.getCurrentPosition({ enableHighAccuracy: true });
     const lat = pos.coords.latitude;
     const lng = pos.coords.longitude;
-    const mapLink = `https://www.google.com/maps?q=${lat},${lng}&z=18`;
-
+    const mapLink = `https://www.google.com/maps/search/?api=1&query=${lat},${lng}`;
     //Guardar en memoria
     const savedPhoto: UserPhoto = {
       filepath: fileName,
-      webviewPath: photo.webPath,
+      webviewPath: 'data:image/jpeg;base64,' + photo.base64String,
       latitude: lat,
       longitude: lng,
       mapLink

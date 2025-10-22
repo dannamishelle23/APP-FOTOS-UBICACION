@@ -30,3 +30,14 @@ Guarda la imagen en la memoria del dispositivo (sistema de archivos) y luego añ
 ![image](image-2.png)
 
 ![photo.ts](image-3.png)
+
+### 4. Modificar tab2.page.html 
+
+En este código, el usuario podrá tomar la foto con un botón que le pedirá permiso para acceder a su ubicación y luego se creará una tarjeta para cada foto, cada una con el link de google maps que muestra la ubicación donde fue tomada la foto. 
+
+#### Código
+![image-4](image-4.png)
+
+
+### 5. Demostración del funcionamiento de la APK
+
