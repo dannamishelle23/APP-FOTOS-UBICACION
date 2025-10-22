@@ -38,6 +38,11 @@ En este código, el usuario podrá tomar la foto con un botón que le pedirá pe
 #### Código
 ![image-4](image-4.png)
 
+### 5. Modificación en AndroidManifest.xml
+
+En Android Studio se debe editar el AndroidManifest.xml para pedir al dispositivo los permisos para acceder a la cámara y a la ubicación.
+
+![image-7](image-5.png)
 
 ### 5. Demostración del funcionamiento de la APK
 
@@ -47,7 +52,3 @@ En este código, el usuario podrá tomar la foto con un botón que le pedirá pe
 #### Cuando se abre la ubicación de la imagen, dirige al punto específico donde fue tomada.
 
 ![image-6](<Imagen de WhatsApp 2025-10-21 a las 23.20.00_7473e7a1.jpg>)
-
-Adicional a ello, en Android Studio se debe editar el AndroidManifest.xml para pedir al dispositivo los permisos para acceder a la cámara y a la ubicación.
-
-![image-7](image-5.png)
