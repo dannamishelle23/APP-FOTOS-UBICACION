@@ -5,7 +5,7 @@ import { Geolocation } from '@capacitor/geolocation';
 
 export interface UserPhoto {
   filepath?: string;       // Ruta en el sistema de archivos
-  webviewPath?: string;    // Ruta visible en <ion-img>
+  webviewPath?: string;   
   latitude?: number;
   longitude?: number;
   mapLink?: string;        // Enlace directo a Google Maps
