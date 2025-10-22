@@ -22,7 +22,6 @@ export class LocationService {
         else if (err && onErr) onErr(err);
       }
     );
-    // Capacitor v6 devuelve string; en v5 podía ser string|null
     return id as unknown as string;
   }
 

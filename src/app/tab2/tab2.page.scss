@@ -1,69 +1,142 @@
-/* Estilos para la galería de fotos */
 :host {
-	display: block;
+  display: block;
+  background: #f4f6f9; 
+  min-height: 100%;
 }
 
+/* Galería responsive con animación */
 .gallery {
-	display: grid;
-	grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
-	gap: 12px;
-	padding: 8px;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 16px;
+  padding: 16px;
+  justify-items: center;
+  animation: fadeIn 0.5s ease;
 }
 
 .photo {
-	position: relative;
+  position: relative;
+  width: 100%;
+  border-radius: 16px;
+  background: #fff;
+  overflow: hidden;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+  transition: transform 0.25s ease, box-shadow 0.25s ease;
+  cursor: pointer;
 }
 
-.photo-wrap {
-	position: relative;
-	width: 100%;
-	padding-top: 100%; /* square */
-	overflow: hidden;
-	border-radius: 12px;
-	box-shadow: 0 4px 8px rgba(0,0,0,0.12);
-	background: #f2f2f2;
+.photo:hover {
+  transform: translateY(-6px);
+  box-shadow: 0 8px 18px rgba(0,0,0,0.15);
 }
 
-.photo-wrap img {
-	position: absolute;
-	top: 0;
-	left: 0;
-	width: 100%;
-	height: 100%;
-	object-fit: cover;
-	display: block;
+/* Imagen de la foto */
+.photo img {
+  width: 100%;
+  height: 200px;
+  object-fit: contain; /* 🔸 Muestra la foto completa */
+  background-color: #000; /* fondo neutro si la foto no llena el espacio */
+  display: block;
+  transition: transform 0.3s ease;
 }
 
-.photo-wrap .delete-btn {
-	position: absolute;
-	top: 6px;
-	right: 6px;
-	background: rgba(0,0,0,0.6);
-	color: #fff;
-	border: none;
-	width: 32px;
-	height: 32px;
-	border-radius: 50%;
-	display: flex;
-	align-items: center;
-	justify-content: center;
-	cursor: pointer;
-	opacity: 0;
-	transition: opacity 0.15s ease;
+.photo:hover img {
+  transform: scale(1.02);
 }
 
-.photo:hover .delete-btn,
-.photo:focus-within .delete-btn {
-	opacity: 1;
+/*Botón eliminar */
+.delete-btn {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  background: rgba(0, 0, 0, 0.55);
+  color: #fff;
+  border: none;
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  opacity: 0;
+  transform: scale(0.8);
+  transition: opacity 0.25s ease, transform 0.25s ease;
 }
 
-.photo-wrap .placeholder {
-	position: absolute;
-	inset: 0;
-	display: flex;
-	align-items: center;
-	justify-content: center;
-	color: #888;
-	font-size: 14px;
+.photo:hover .delete-btn {
+  opacity: 1;
+  transform: scale(1);
 }
 
+/*Información debajo de la foto */
+.photo-info {
+  padding: 10px 12px;
+  font-size: 0.9em;
+  color: #333;
+  text-align: center;
+  border-top: 1px solid #eee;
+  background-color: #fafafa;
+}
+
+.photo-info h2 {
+  font-size: 0.95em;
+  font-weight: 600;
+  color: #222;
+  margin-bottom: 4px;
+}
+
+.photo-info a {
+  color: #007bff;
+  text-decoration: none;
+  font-weight: 500;
+}
+
+.photo-info a:hover {
+  text-decoration: underline;
+}
+
+.no-photos {
+  text-align: center;
+  color: #777;
+  font-size: 1.1em;
+  margin-top: 3rem;
+  animation: fadeIn 0.6s ease;
+}
+
+/*Botón flotante de cámara */
+.camera-fab {
+  bottom: 80px !important;
+}
+
+ion-fab-button {
+  --background: linear-gradient(135deg, #007bff, #00b4d8);
+  box-shadow: 0 4px 14px rgba(0,0,0,0.3);
+  transition: transform 0.2s ease;
+}
+
+ion-fab-button:hover {
+  transform: scale(1.1);
+}
+
+/*Animación de entrada */
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/*Responsividad */
+@media (max-width: 480px) {
+  .gallery {
+    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+    gap: 10px;
+  }
+
+  .photo img {
+    height: 160px;
+  }
+
+  .camera-fab {
+    bottom: 70px !important;
+  }
+}

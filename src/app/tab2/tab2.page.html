@@ -1,38 +1,39 @@
 <ion-header>
   <ion-toolbar color="primary">
-    <ion-title>Photo Gallery</ion-title>
+    <ion-title>Galería de Fotos</ion-title>
   </ion-toolbar>
 </ion-header>
 
-<ion-content class="ion-padding">
-  <div *ngIf="uniquePhotos().length === 0">No hay fotos aún.</div>
+<ion-content>
 
-  <ion-grid>
-    <ion-row>
-      <ion-col size="6" *ngFor="let photo of uniquePhotos(); index as i">
-        <ion-card>
-          <ion-img [src]="photo.webviewPath" (error)="onImgError($event)"></ion-img>
-          <ion-card-content>
-            <h1>Coordenadas:</h1>
-            <p *ngIf="photo.latitude && photo.longitude">
-              Latitud: {{ photo.latitude }}, 
-              <br>Lng: {{ photo.longitude }},
-            </p>
-            <p *ngIf="photo.mapLink">
-              <a [href]="photo.mapLink" target="_blank">Ver ubicación en Google Maps</a>
-            </p>
-            <ion-button expand="block" color="danger" (click)="deletePhoto(photo, i)">
-              Eliminar
-            </ion-button>
-          </ion-card-content>
-        </ion-card>
-      </ion-col>
-    </ion-row>
-  </ion-grid>
+  <div *ngIf="uniquePhotos().length === 0" class="no-photos">
+    No hay fotos aún.
+  </div>
 
-  <ion-fab vertical="bottom" horizontal="center" slot="fixed">
-    <ion-fab-button (click)="addPhotoToGallery()">
+  <div class="gallery">
+    <div class="photo" *ngFor="let photo of uniquePhotos(); index as i">
+      <img [src]="photo.webviewPath" (error)="onImgError($event)" />
+      <button class="delete-btn" (click)="deletePhoto(photo, i)">
+        <ion-icon name="trash-outline"></ion-icon>
+      </button>
+
+      <div class="photo-info">
+        <h2>Coordenadas</h2>
+        <p *ngIf="photo.latitude && photo.longitude">
+          Latitud: {{ photo.latitude }}<br>
+          Longitud: {{ photo.longitude }}
+        </p>
+        <p *ngIf="photo.mapLink">
+        </p>
+        <a [href]="photo.mapLink" target="_blank">Ver ubicación de la foto en Google Maps</a>
+      </div>
+    </div>
+  </div>
+
+  <ion-fab vertical="bottom" horizontal="center" slot="fixed" class="camera-fab">
+    <ion-fab-button color="primary" (click)="addPhotoToGallery()">
       <ion-icon name="camera"></ion-icon>
     </ion-fab-button>
   </ion-fab>
+
 </ion-content>

@@ -4,42 +4,36 @@ import { Filesystem, Directory } from '@capacitor/filesystem';
 import { Geolocation } from '@capacitor/geolocation';
 
 export interface UserPhoto {
-  filepath?: string;       // Ruta del archivo en filesystem
-  webviewPath?: string;    // Para mostrar en <ion-img>
+  filepath?: string;       // Ruta en el sistema de archivos
+  webviewPath?: string;    // Ruta visible en <ion-img>
   latitude?: number;
   longitude?: number;
-  mapLink?: string;
+  mapLink?: string;        // Enlace directo a Google Maps
 }
 
 @Injectable({ providedIn: 'root' })
 export class PhotoService {
   public photos: UserPhoto[] = [];
 
-  // Cargar fotos guardadas
+  //Cargar fotos guardadas
   async loadSaved() {
     try {
       const file = await Filesystem.readFile({
         path: 'photos.json',
         directory: Directory.Data
       });
-      
-      // Manejar caso donde file.data puede ser string o Blob
+
       let jsonData: string;
-      if (typeof file.data === 'string') {
-        jsonData = file.data;
-      } else {
-        // Si es Blob, convertir a texto
-        jsonData = await (file.data as Blob).text();
-      }
-      
-      this.photos = JSON.parse(jsonData);
-    } catch (e) {
-      console.log('No hay fotos guardadas:', e);
+      if (typeof file.data === 'string') jsonData = file.data;
+      else jsonData = await (file.data as Blob).text();
+
+      this.photos = JSON.parse(jsonData) || [];
+    } catch {
       this.photos = [];
     }
   }
 
-  // Guardar lista completa en JSON
+  //Guardar todas las fotos en JSON
   async savePhotos() {
     await Filesystem.writeFile({
       path: 'photos.json',
@@ -48,31 +42,32 @@ export class PhotoService {
     });
   }
 
-  // Tomar nueva foto y obtener ubicación
+  //Tomar nueva foto + guardar ubicación
   async addNewToGallery() {
-    //Tomar foto
+    // Tomar foto
     const photo: Photo = await Camera.getPhoto({
       resultType: CameraResultType.Uri,
       source: CameraSource.Camera,
-      quality: 90
+      quality: 85
     });
 
     //Guardar en filesystem
     const base64Data = await this.readAsBase64(photo);
-    const fileName = new Date().getTime() + '.jpeg';
+    const fileName = `${new Date().getTime()}.jpeg`;
+
     await Filesystem.writeFile({
       path: fileName,
       data: base64Data,
       directory: Directory.Data
     });
 
-    // Obtener ubicación
+    //Obtener coordenadas
     const pos = await Geolocation.getCurrentPosition({ enableHighAccuracy: true });
     const lat = pos.coords.latitude;
     const lng = pos.coords.longitude;
-    const mapLink = `https://www.google.com/maps/@${lat},${lng}`;
+    const mapLink = `https://www.google.com/maps?q=${lat},${lng}&z=18`;
 
-    // Guardar en arreglo
+    //Guardar en memoria
     const savedPhoto: UserPhoto = {
       filepath: fileName,
       webviewPath: photo.webPath,
@@ -82,16 +77,14 @@ export class PhotoService {
     };
 
     this.photos.unshift(savedPhoto);
-
-    //Guardar fotos en JSON
     await this.savePhotos();
   }
 
-  // Convertir Photo a base64
+  //Convertir imagen a base64
   private async readAsBase64(photo: Photo): Promise<string> {
     const response = await fetch(photo.webPath!);
     const blob = await response.blob();
-    return await new Promise<string>((resolve, reject) => {
+    return new Promise((resolve, reject) => {
       const reader = new FileReader();
       reader.onload = () => resolve(reader.result as string);
       reader.onerror = reject;
@@ -99,9 +92,10 @@ export class PhotoService {
     });
   }
 
-  // Eliminar foto
+  //Eliminar foto del arreglo y del almacenamiento
   async deletePhoto(photo: UserPhoto, index: number) {
     this.photos.splice(index, 1);
+
     if (photo.filepath) {
       try {
         await Filesystem.deleteFile({
@@ -109,9 +103,10 @@ export class PhotoService {
           directory: Directory.Data
         });
       } catch (e) {
-        console.error('Error eliminando archivo', e);
+        console.warn('No se pudo eliminar archivo:', e);
       }
     }
+
     await this.savePhotos();
   }
 }
