@@ -1,36 +1,64 @@
 import { Injectable } from '@angular/core';
-import { Camera, CameraResultType, CameraSource, Photo as CameraPhoto } from '@capacitor/camera';
-import { Filesystem, Directory, ReadFileResult } from '@capacitor/filesystem';
-import { Preferences } from '@capacitor/preferences';
-import { Platform } from '@ionic/angular';
+import { Camera, CameraResultType, CameraSource, Photo } from '@capacitor/camera';
+import { Filesystem, Directory } from '@capacitor/filesystem';
+import { Geolocation } from '@capacitor/geolocation';
 
-@Injectable({
-  providedIn: 'root'
-})
+export interface UserPhoto {
+  filepath?: string;       // Ruta del archivo en filesystem
+  webviewPath?: string;    // Para mostrar en <ion-img>
+  latitude?: number;
+  longitude?: number;
+  mapLink?: string;
+}
+
+@Injectable({ providedIn: 'root' })
 export class PhotoService {
   public photos: UserPhoto[] = [];
-  private PHOTO_STORAGE: string = 'photos';
 
-  constructor(private platform: Platform) {}
+  // Cargar fotos guardadas
+  async loadSaved() {
+    try {
+      const file = await Filesystem.readFile({
+        path: 'photos.json',
+        directory: Directory.Data
+      });
+      
+      // Manejar caso donde file.data puede ser string o Blob
+      let jsonData: string;
+      if (typeof file.data === 'string') {
+        jsonData = file.data;
+      } else {
+        // Si es Blob, convertir a texto
+        jsonData = await (file.data as Blob).text();
+      }
+      
+      this.photos = JSON.parse(jsonData);
+    } catch (e) {
+      console.log('No hay fotos guardadas:', e);
+      this.photos = [];
+    }
+  }
 
-  // Captura y guarda la foto
-  public async addNewToGallery() {
-    const capturedPhoto = await Camera.getPhoto({
+  // Guardar lista completa en JSON
+  async savePhotos() {
+    await Filesystem.writeFile({
+      path: 'photos.json',
+      data: JSON.stringify(this.photos),
+      directory: Directory.Data
+    });
+  }
+
+  // Tomar nueva foto y obtener ubicación
+  async addNewToGallery() {
+    //Tomar foto
+    const photo: Photo = await Camera.getPhoto({
       resultType: CameraResultType.Uri,
       source: CameraSource.Camera,
-      quality: 100
+      quality: 90
     });
 
-    const savedImageFile = await this.savePicture(capturedPhoto);
-
-    this.photos.unshift(savedImageFile);
-  }
-  
-
-  // Guardar foto en filesystem y Preferences
-  private async savePicture(cameraPhoto: CameraPhoto): Promise<UserPhoto> {
-    const base64Data = await this.readAsBase64(cameraPhoto);
-
+    //Guardar en filesystem
+    const base64Data = await this.readAsBase64(photo);
     const fileName = new Date().getTime() + '.jpeg';
     await Filesystem.writeFile({
       path: fileName,
@@ -38,50 +66,52 @@ export class PhotoService {
       directory: Directory.Data
     });
 
-    const newPhoto: UserPhoto = {
+    // Obtener ubicación
+    const pos = await Geolocation.getCurrentPosition({ enableHighAccuracy: true });
+    const lat = pos.coords.latitude;
+    const lng = pos.coords.longitude;
+    const mapLink = `https://www.google.com/maps/@${lat},${lng}`;
+
+    // Guardar en arreglo
+    const savedPhoto: UserPhoto = {
       filepath: fileName,
-      webviewPath: cameraPhoto.webPath
+      webviewPath: photo.webPath,
+      latitude: lat,
+      longitude: lng,
+      mapLink
     };
 
-    // Guardar en Preferences
-    const photos = [newPhoto, ...this.photos];
-    await Preferences.set({ key: this.PHOTO_STORAGE, value: JSON.stringify(photos) });
+    this.photos.unshift(savedPhoto);
 
-    return newPhoto;
+    //Guardar fotos en JSON
+    await this.savePhotos();
   }
 
-  // Convertir CameraPhoto a base64
-  private async readAsBase64(cameraPhoto: CameraPhoto): Promise<string> {
-    if (this.platform.is('hybrid')) {
-      // En dispositivos móviles
-      const file: ReadFileResult = await Filesystem.readFile({
-        path: cameraPhoto.path!
-      });
-      return file.data as string; // forzamos a string
-    } else {
-      // En navegador
-      const response = await fetch(cameraPhoto.webPath!);
-      const blob = await response.blob();
-      return await this.convertBlobToBase64(blob);
+  // Convertir Photo a base64
+  private async readAsBase64(photo: Photo): Promise<string> {
+    const response = await fetch(photo.webPath!);
+    const blob = await response.blob();
+    return await new Promise<string>((resolve, reject) => {
+      const reader = new FileReader();
+      reader.onload = () => resolve(reader.result as string);
+      reader.onerror = reject;
+      reader.readAsDataURL(blob);
+    });
+  }
+
+  // Eliminar foto
+  async deletePhoto(photo: UserPhoto, index: number) {
+    this.photos.splice(index, 1);
+    if (photo.filepath) {
+      try {
+        await Filesystem.deleteFile({
+          path: photo.filepath,
+          directory: Directory.Data
+        });
+      } catch (e) {
+        console.error('Error eliminando archivo', e);
+      }
     }
+    await this.savePhotos();
   }
-
-  private convertBlobToBase64 = (blob: Blob): Promise<string> => new Promise((resolve, reject) => {
-    const reader = new FileReader();
-    reader.onerror = reject;
-    reader.onload = () => resolve(reader.result as string);
-    reader.readAsDataURL(blob);
-  });
-
-  // Cargar fotos al iniciar la app
-  public async loadSaved() {
-    const photoList = await Preferences.get({ key: this.PHOTO_STORAGE });
-    this.photos = photoList.value ? JSON.parse(photoList.value) : [];
-  }
-}
-
-// Interfaz para cada foto
-export interface UserPhoto {
-  filepath: string;
-  webviewPath?: string;
 }

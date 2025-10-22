@@ -1,0 +1,69 @@
+/* Estilos para la galería de fotos */
+:host {
+	display: block;
+}
+
+.gallery {
+	display: grid;
+	grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+	gap: 12px;
+	padding: 8px;
+}
+
+.photo {
+	position: relative;
+}
+
+.photo-wrap {
+	position: relative;
+	width: 100%;
+	padding-top: 100%; /* square */
+	overflow: hidden;
+	border-radius: 12px;
+	box-shadow: 0 4px 8px rgba(0,0,0,0.12);
+	background: #f2f2f2;
+}
+
+.photo-wrap img {
+	position: absolute;
+	top: 0;
+	left: 0;
+	width: 100%;
+	height: 100%;
+	object-fit: cover;
+	display: block;
+}
+
+.photo-wrap .delete-btn {
+	position: absolute;
+	top: 6px;
+	right: 6px;
+	background: rgba(0,0,0,0.6);
+	color: #fff;
+	border: none;
+	width: 32px;
+	height: 32px;
+	border-radius: 50%;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	cursor: pointer;
+	opacity: 0;
+	transition: opacity 0.15s ease;
+}
+
+.photo:hover .delete-btn,
+.photo:focus-within .delete-btn {
+	opacity: 1;
+}
+
+.photo-wrap .placeholder {
+	position: absolute;
+	inset: 0;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	color: #888;
+	font-size: 14px;
+}
+

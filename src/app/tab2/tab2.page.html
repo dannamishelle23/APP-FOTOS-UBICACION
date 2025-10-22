@@ -1,37 +1,38 @@
 <ion-header>
   <ion-toolbar color="primary">
-    <ion-title>
-      Photo Gallery
-    </ion-title>
+    <ion-title>Photo Gallery</ion-title>
   </ion-toolbar>
 </ion-header>
 
 <ion-content class="ion-padding">
-
-  <div *ngIf="photoService.photos.length === 0" class="no-photos">
-    No hay fotos aún. 
-  </div>
+  <div *ngIf="uniquePhotos().length === 0">No hay fotos aún.</div>
 
   <ion-grid>
     <ion-row>
-      <ion-col size="6" *ngFor="let photo of photoService.photos; index as i">
-        <ion-img [src]="photo.webviewPath"
-                 style="border-radius: 12px; margin-bottom: 12px; box-shadow: 0 4px 8px rgba(0,0,0,0.2);">
-        </ion-img>
+      <ion-col size="6" *ngFor="let photo of uniquePhotos(); index as i">
+        <ion-card>
+          <ion-img [src]="photo.webviewPath" (error)="onImgError($event)"></ion-img>
+          <ion-card-content>
+            <h1>Coordenadas:</h1>
+            <p *ngIf="photo.latitude && photo.longitude">
+              Latitud: {{ photo.latitude }}, 
+              <br>Lng: {{ photo.longitude }},
+            </p>
+            <p *ngIf="photo.mapLink">
+              <a [href]="photo.mapLink" target="_blank">Ver ubicación en Google Maps</a>
+            </p>
+            <ion-button expand="block" color="danger" (click)="deletePhoto(photo, i)">
+              Eliminar
+            </ion-button>
+          </ion-card-content>
+        </ion-card>
       </ion-col>
     </ion-row>
   </ion-grid>
-
-  <div *ngIf="photoService.photos.length > 0" class="photo-counter">
-    Total de fotos: {{ photoService.photos.length }}
-  </div>
 
   <ion-fab vertical="bottom" horizontal="center" slot="fixed">
     <ion-fab-button (click)="addPhotoToGallery()">
       <ion-icon name="camera"></ion-icon>
     </ion-fab-button>
   </ion-fab>
-
 </ion-content>
-
-
